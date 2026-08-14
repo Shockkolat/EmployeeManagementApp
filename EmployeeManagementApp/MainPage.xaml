@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:EmployeeManagementApp.ViewModels"
+             x:Class="EmployeeManagementApp.MainPage"
+             x:Name="thisPage"
+             Title="Employee Management">
+
+    <ContentPage.BindingContext>
+        <vm:MainViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto, *" Padding="16" RowSpacing="16">
+
+        <!-- 20260814 - Full Form Update by Deaw -->
+        <ScrollView Grid.Row="0" MaximumHeightRequest="420">
+            <Border Padding="16" StrokeShape="RoundRectangle 10" BackgroundColor="#F9FAFB">
+                <VerticalStackLayout Spacing="10">
+
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Grid.Column="0" Text="{Binding FormTitleText}" FontSize="18" FontAttributes="Bold" TextColor="#1F2937" VerticalOptions="Center"/>
+
+                        <Button Grid.Column="1" 
+                                Text="ยกเลิก" 
+                                Command="{Binding CancelEditCommand}" 
+                                IsVisible="{Binding IsEditing}"
+                                BackgroundColor="#9CA3AF" 
+                                TextColor="White" 
+                                HeightRequest="32" 
+                                FontSize="12"/>
+                    </Grid>
+
+                    <HorizontalStackLayout Spacing="12">
+                        <Image Source="{Binding PhotoUrl, TargetNullValue='dotnet_bot.png'}" 
+                               WidthRequest="60" HeightRequest="60" Aspect="AspectFill">
+                            <Image.Clip>
+                                <EllipseGeometry Center="30,30" RadiusX="30" RadiusY="30" />
+                            </Image.Clip>
+                        </Image>
+                        <Button Text="เลือกรูปภาพ" Command="{Binding PickImageCommand}" VerticalOptions="Center" HeightRequest="40"/>
+                    </HorizontalStackLayout>
+
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                        <Entry Grid.Column="0" Placeholder="ชื่อ" Text="{Binding FirstName}" />
+                        <Entry Grid.Column="1" Placeholder="นามสกุล" Text="{Binding LastName}" />
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                        <Picker Grid.Column="0" 
+                                Title="เลือกแผนก" 
+                                ItemsSource="{Binding Departments}" 
+                                ItemDisplayBinding="{Binding Department_Name}" 
+                                SelectedItem="{Binding SelectedDepartment}" />
+
+                        <Picker Grid.Column="1" Title="เลือกเพศ" SelectedItem="{Binding Gender}">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>Male</x:String>
+                                    <x:String>Female</x:String>
+                                    <x:String>Other</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="วันเกิด" FontSize="12" TextColor="#6B7280" />
+                            <DatePicker Date="{Binding DateOfBirth}" Format="yyyy-MM-dd" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="วันเข้าทำงาน" FontSize="12" TextColor="#6B7280" />
+                            <DatePicker Date="{Binding DateJoined}" Format="yyyy-MM-dd" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Entry Placeholder="ที่อยู่ (Address)" Text="{Binding Address}" />
+
+                    <Button Text="{Binding SaveButtonText}" 
+                            Command="{Binding SaveEmployeeCommand}" 
+                            BackgroundColor="#2563EB" 
+                            TextColor="White" 
+                            FontAttributes="Bold" />
+                </VerticalStackLayout>
+            </Border>
+        </ScrollView>
+        <!-- 20260814 - Full Form Update by Deaw -->
+        
+        <RefreshView Grid.Row="1" Command="{Binding LoadEmployeesCommand}" IsRefreshing="{Binding IsBusy}">
+            <CollectionView ItemsSource="{Binding Employees}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Padding="12" Margin="0,4" StrokeShape="RoundRectangle 8">
+                            <Grid ColumnDefinitions="50, *, Auto" ColumnSpacing="12" VerticalOptions="Center">
+
+                                <Image Grid.Column="0" Source="{Binding FullPhotoUrl}" 
+                                       WidthRequest="45" HeightRequest="45" Aspect="AspectFill">
+                                    <Image.Clip>
+                                        <EllipseGeometry Center="22.5,22.5" RadiusX="22.5" RadiusY="22.5" />
+                                    </Image.Clip>
+                                </Image>
+
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                    <Label Text="{Binding FullName}" FontAttributes="Bold" FontSize="15" TextColor="#111827" />
+                                    <HorizontalStackLayout Spacing="8">
+                                        <Label Text="{Binding Gender}" FontSize="12" TextColor="#6B7280" />
+                                        <Label Text="|" FontSize="12" TextColor="#D1D5DB" />
+                                        <Label Text="{Binding Employee_Address}" FontSize="12" TextColor="#6B7280" />
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                                <HorizontalStackLayout Grid.Column="2" Spacing="6">
+                                    <Button Text="แก้ไข" 
+                                        BackgroundColor="#F59E0B" 
+                                        TextColor="White" 
+                                        HeightRequest="36"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MainViewModel}}, Path=EditEmployeeCommand}"
+                                        CommandParameter="{Binding .}" />
+
+                                    <Button Grid.Column="2" 
+                                        Text="ลบ" 
+                                        BackgroundColor="#EF4444" 
+                                        TextColor="White" 
+                                        HeightRequest="36"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MainViewModel}}, Path=DeleteEmployeeCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage>
