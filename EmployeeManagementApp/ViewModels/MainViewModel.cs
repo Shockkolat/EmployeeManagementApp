@@ -235,5 +235,11 @@ namespace EmployeeManagementApp.ViewModels
                 await LoadEmployeesAsync();
             }
         }
+
+        [RelayCommand]
+        public async Task GoToWithdrawalPageAsync()
+        {
+            await Shell.Current.GoToAsync(nameof(Welfare_E_List));
+        }
     }
 }

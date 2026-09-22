@@ -11,7 +11,6 @@
     </ContentPage.BindingContext>
 
     <Grid RowDefinitions="Auto, *" Padding="16" RowSpacing="16">
-
         <!-- 20260814 - Full Form Update by Deaw -->
         <ScrollView Grid.Row="0" MaximumHeightRequest="420">
             <Border Padding="16" StrokeShape="RoundRectangle 10" BackgroundColor="#F9FAFB">
@@ -29,7 +28,22 @@
                                 HeightRequest="32" 
                                 FontSize="12"/>
                     </Grid>
+                    <Grid ColumnDefinitions="*, Auto" Margin="0,0,0,12">
+                        <Label Grid.Column="0" 
+                       Text="Employee Management" 
+                       FontSize="22" 
+                       FontAttributes="Bold" 
+                       VerticalOptions="Center" />
 
+                                            <Button Grid.Column="1" 
+                        Text="รายการเบิก" 
+                        Command="{Binding GoToWithdrawalPageCommand}" 
+                        BackgroundColor="#FF5722" 
+                        TextColor="White" 
+                        CornerRadius="8" 
+                        HeightRequest="40" 
+                        Padding="12,0" />
+                    </Grid>
                     <HorizontalStackLayout Spacing="12">
                         <Image Source="{Binding PhotoUrl, TargetNullValue='dotnet_bot.png'}" 
                                WidthRequest="60" HeightRequest="60" Aspect="AspectFill">

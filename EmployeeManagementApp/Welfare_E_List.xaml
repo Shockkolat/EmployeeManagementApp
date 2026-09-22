@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:EmployeeManagementApp.ViewModels"
+             x:Class="EmployeeManagementApp.Welfare_E_List"
+             Title="รายการเบิก"
+             Shell.BackgroundColor="#FF5722"
+             Shell.TitleColor="White"
+             Shell.ForegroundColor="White">
+
+    <ContentPage.BindingContext>
+        <vm:Welfare_E_List_ViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto, *" BackgroundColor="#FFFFFF">
+
+        <!-- Header Action Bar (Filter & Top Menu) -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto, *" Padding="16,12" VerticalOptions="Center">
+
+            <!-- ปุ่ม Filter สีส้มด้านซ้าย -->
+            <Border Grid.Column="0" 
+                    BackgroundColor="#FF5722" 
+                    StrokeShape="RoundRectangle 20" 
+                    WidthRequest="50" HeightRequest="40" 
+                    HorizontalOptions="Start">
+                <Label Text="🔍" FontSize="18" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+            </Border>
+
+            <!-- เมนูไอคอนทางขวา (เบิก, รายการ, สรุป) -->
+            <HorizontalStackLayout Grid.Column="1" HorizontalOptions="End" Spacing="16">
+
+                <!-- ปุ่ม 1: เบิก -->
+                <VerticalStackLayout Spacing="2">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToCreateWithdrawalCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+
+                    <Border BackgroundColor="#2E7D32" 
+                StrokeShape="RoundRectangle 18" 
+                WidthRequest="36" 
+                HeightRequest="36">
+                        <Label Text="+" 
+                   TextColor="White" 
+                   FontSize="20" 
+                   FontAttributes="Bold" 
+                   HorizontalOptions="Center" 
+                   VerticalOptions="Center"/>
+                    </Border>
+                    <Label Text="เบิก" 
+               FontSize="11" 
+               TextColor="#616161" 
+               HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+
+                <!-- ปุ่ม 2: รายการ -->
+                <VerticalStackLayout Spacing="2">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToWithdrawalListCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+
+                    <Border BackgroundColor="#FFF9C4" 
+                StrokeShape="RoundRectangle 18" 
+                WidthRequest="36" 
+                HeightRequest="36" 
+                Stroke="#FBC02D">
+                        <Label Text="📋" 
+                   FontSize="16" 
+                   HorizontalOptions="Center" 
+                   VerticalOptions="Center"/>
+                    </Border>
+                    <Label Text="รายการ" 
+               FontSize="11" 
+               TextColor="#616161" 
+               HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+
+                <!-- ปุ่ม 3: สรุป -->
+                <VerticalStackLayout Spacing="2">
+                    <!-- ผูกคำสั่งกดปุ่มที่นี่ -->
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToSummaryCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+
+                    <Border BackgroundColor="#E0F7FA" 
+                        StrokeShape="RoundRectangle 18" 
+                        WidthRequest="36" 
+                        HeightRequest="36" 
+                        Stroke="#00ACC1">
+                                    <Label Text="📊" 
+                           FontSize="16" 
+                           HorizontalOptions="Center" 
+                           VerticalOptions="Center"/>
+                                </Border>
+                                <Label Text="สรุป" 
+                       FontSize="11" 
+                       TextColor="#616161" 
+                       HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+
+            </HorizontalStackLayout>
+        </Grid>
+
+        <!-- รายการเบิก (CollectionView) -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Items}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="10,2" 
+                            Padding="14" 
+                            Stroke="#2196F3" 
+                            StrokeThickness="1" 
+                            StrokeShape="RoundRectangle 12" 
+                            BackgroundColor="White">
+                        <Grid RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="4">
+
+                            <!-- Row 0: รหัสเอกสาร + วันที่ -->
+                            <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
+                                <Label Grid.Column="0" 
+                                       Text="{Binding Code}" 
+                                       TextColor="#1976D2" 
+                                       FontAttributes="Bold" 
+                                       FontSize="14" />
+                                <Label Grid.Column="1" 
+                                       Text="{Binding DateText}" 
+                                       TextColor="#9E9E9E" 
+                                       FontSize="11" />
+                            </Grid>
+
+                            <!-- Row 1: หัวข้อการเบิก + จำนวนเงิน -->
+                            <Grid Grid.Row="1" ColumnDefinitions="*, Auto">
+                                <Label Grid.Column="0" 
+                                       Text="{Binding Title}" 
+                                       TextColor="#212121" 
+                                       FontAttributes="Bold" 
+                                       FontSize="15" />
+                                <Label Grid.Column="1" 
+                                       Text="{Binding AmountText}" 
+                                       TextColor="#212121" 
+                                       FontAttributes="Bold" 
+                                       FontSize="15" 
+                                       IsVisible="{Binding AmountText, Converter={StaticResource StringNotNullOrEmptyConverter}}" />
+                            </Grid>
+
+                            <!-- Row 2: รายละเอียดสถานที่/คำอธิบาย -->
+                            <Label Grid.Row="2" 
+                                   Text="{Binding Description}" 
+                                   TextColor="#757575" 
+                                   FontSize="12" />
+
+                            <!-- Row 3: จำนวนรายการ + จำนวนไฟล์แนบ + สถานะ -->
+                            <Grid Grid.Row="3" ColumnDefinitions="*, Auto" Margin="0,4,0,0">
+                                <HorizontalStackLayout Grid.Column="0" Spacing="12">
+                                    <Label Text="{Binding ItemsCountText}" TextColor="#757575" FontSize="12" />
+                                    <Label Text="{Binding FilesCountText}" TextColor="#757575" FontSize="12" />
+                                </HorizontalStackLayout>
+
+                                <Label Grid.Column="1" 
+                                       Text="{Binding StatusText}" 
+                                       TextColor="#FF9800" 
+                                       FontSize="12" 
+                                       FontAttributes="Bold" />
+                            </Grid>
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+
+</ContentPage>

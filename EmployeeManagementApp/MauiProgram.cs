@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using EmployeeManagementApp.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace EmployeeManagementApp
 {
@@ -15,8 +16,17 @@ namespace EmployeeManagementApp
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
+            builder.Services.AddTransient<MainViewModel>();
+            builder.Services.AddTransient<MainPage>();
+
+            builder.Services.AddTransient<Welfare_E_List_ViewModel>();
+            builder.Services.AddTransient<Welfare_E_List>();
+
+            builder.Services.AddTransient<SummaryViewModel>();
+            builder.Services.AddTransient<SummaryPage>();
+
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();
