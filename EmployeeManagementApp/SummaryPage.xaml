@@ -1,289 +1,213 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:EmployeeManagementApp.ViewModels"
              x:Class="EmployeeManagementApp.SummaryPage"
-             Title="สรุป"
-             Shell.BackgroundColor="#FF5722"
-             Shell.TitleColor="White"
-             Shell.ForegroundColor="White">
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#F5F6F8">
 
-    <ContentPage.BindingContext>
-        <vm:SummaryViewModel />
-    </ContentPage.BindingContext>
+    <Grid RowDefinitions="Auto, *">
 
-    <Grid RowDefinitions="Auto, Auto, *" BackgroundColor="#F5F5F5">
+        <!-- ================= 1. CUSTOM HEADER BAR ================= -->
+        <Grid Grid.Row="0" BackgroundColor="#FF5722" HeightRequest="56" Padding="12,0" ColumnDefinitions="Auto, *, Auto">
 
-        <!-- Top Header & Menu -->
-        <Grid Grid.Row="0" ColumnDefinitions="Auto, *" Margin="16,12" BackgroundColor="White">
-            <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
-                <Label Text="เลือกปี" TextColor="#616161" VerticalOptions="Center"/>
-                <Border BackgroundColor="#E0E0E0" StrokeShape="RoundRectangle 6" Padding="10,4">
-                    <Label Text="{Binding SelectedYear}" FontAttributes="Bold" TextColor="#212121"/>
-                </Border>
-            </HorizontalStackLayout>
-
-            <HorizontalStackLayout Grid.Column="1" HorizontalOptions="End" Spacing="16">
-                <VerticalStackLayout Spacing="2">
-                    <Border BackgroundColor="#2E7D32" StrokeShape="RoundRectangle 18" WidthRequest="36" HeightRequest="36">
-                        <Label Text="+" TextColor="White" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
-                    </Border>
-                    <Label Text="เบิก" FontSize="11" TextColor="#616161" HorizontalOptions="Center"/>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Spacing="2">
-                    <Border BackgroundColor="#FFF9C4" StrokeShape="RoundRectangle 18" WidthRequest="36" HeightRequest="36" Stroke="#FBC02D">
-                        <Label Text="📋" FontSize="16" HorizontalOptions="Center" VerticalOptions="Center"/>
-                    </Border>
-                    <Label Text="รายการ" FontSize="11" TextColor="#616161" HorizontalOptions="Center"/>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Spacing="2">
-                    <Border BackgroundColor="#E0F7FA" StrokeShape="RoundRectangle 18" WidthRequest="36" HeightRequest="36" Stroke="#00ACC1">
-                        <Label Text="📊" FontSize="16" HorizontalOptions="Center" VerticalOptions="Center"/>
-                    </Border>
-                    <Label Text="สรุป" FontSize="11" TextColor="#616161" HorizontalOptions="Center"/>
-                </VerticalStackLayout>
-            </HorizontalStackLayout>
-        </Grid>
-
-        <!-- Tab Switcher Bar -->
-        <Grid Grid.Row="1" ColumnDefinitions="*, *" Margin="16,12" BackgroundColor="#E3F2FD">
-            <Border StrokeShape="RoundRectangle 10">
+            <!-- ปุ่มกดย้อนกลับ (<) -->
+            <Border Grid.Column="0" BackgroundColor="Transparent" StrokeThickness="0" WidthRequest="40" HeightRequest="40" VerticalOptions="Center">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnHeaderBackTapped" />
+                </Border.GestureRecognizers>
+                <Label Text="‹" TextColor="White" FontSize="32" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" Margin="0,-4,0,0"/>
             </Border>
-            <Button Grid.Column="0" Text="⊞ ตามหมวดหมู่" 
-            Command="{Binding SelectTabCommand}" CommandParameter="Category"
-            BackgroundColor="{Binding IsCategoryTabSelected, Converter={StaticResource BoolToColorConverter}, FallbackValue='#1E88E5'}"
-            TextColor="White" CornerRadius="8" HeightRequest="38" FontAttributes="Bold" FontSize="13"/>
 
-            <Button Grid.Column="1" Text="≡ รายสวัสดิการ" 
-            Command="{Binding SelectTabCommand}" CommandParameter="Benefit"
-            BackgroundColor="{Binding IsBenefitTabSelected, Converter={StaticResource BoolToColorConverter}, FallbackValue='#1E88E5'}"
-            TextColor="White" CornerRadius="8" HeightRequest="38" FontAttributes="Bold" FontSize="13"/>
+            <!-- หัวข้อหน้า -->
+            <Label Grid.Column="1" Text="สรุป" TextColor="White" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
         </Grid>
 
-        <!-- Dynamic Content Section -->
-        <Grid Grid.Row="2">
+        <!-- ================= 2. MAIN CONTENT AREA ================= -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="16" Padding="16,12">
 
-            <!-- TAB 1: ตามหมวดหมู่ -->
-            <ScrollView Padding="16,4,16,16">
-                <ScrollView.Triggers>
-                    <DataTrigger TargetType="ScrollView" Binding="{Binding IsCategoryTabSelected}" Value="False">
-                        <Setter Property="IsVisible" Value="False" />
-                    </DataTrigger>
-                    <DataTrigger TargetType="ScrollView" Binding="{Binding IsCategoryTabSelected}" Value="True">
-                        <Setter Property="IsVisible" Value="True" />
-                    </DataTrigger>
-                </ScrollView.Triggers>
+                <!-- Header Action Bar (เลือกปี + เมนูขวา) -->
+                <Grid ColumnDefinitions="Auto, *">
+                    <!-- Dropdown List เลือกปี -->
+                    <HorizontalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Center">
+                        <Label Text="เลือกปี" TextColor="#616161" FontSize="14" VerticalOptions="Center"/>
+                        <Border BackgroundColor="#E8EAF6" StrokeShape="RoundRectangle 8" Padding="8,0" StrokeThickness="0">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Picker x:Name="YearPicker"
+                                        Grid.Column="0"
+                                        TextColor="#1A237E"
+                                        FontAttributes="Bold"
+                                        FontSize="14"
+                                        Title="2569"
+                                        TitleColor="#1A237E"
+                                        SelectedIndexChanged="OnYearPickerChanged" />
+                                <Label Grid.Column="1" Text="˅" TextColor="#1A237E" FontSize="10" VerticalOptions="Center" InputTransparent="True"/>
+                            </Grid>
+                        </Border>
+                    </HorizontalStackLayout>
 
-                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Categories}" Spacing="16">
-                    <BindableLayout.ItemTemplate>
-                        <DataTemplate>
-                            <!-- การ์ดหมวดหมู่หลัก -->
-                            <Border StrokeShape="RoundRectangle 20" 
-                        BackgroundColor="{Binding CardBgColor}" 
-                        Padding="16" 
-                        StrokeThickness="0">
-
-                                <VerticalStackLayout Spacing="12">
-
-                                    <!-- Header การ์ดหลัก -->
-                                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
-                                        <!-- ไอคอนวงกลมหัวข้อ -->
-                                        <Border Grid.Column="0" 
-                                    BackgroundColor="{Binding HeaderIconBgColor}" 
-                                    StrokeShape="RoundRectangle 20" 
-                                    WidthRequest="40" 
-                                    HeightRequest="40" 
-                                    StrokeThickness="0"
-                                    VerticalOptions="Start">
-                                            <Label Text="{Binding Icon}" 
-                                       FontSize="18" 
-                                       HorizontalOptions="Center" 
-                                       VerticalOptions="Center"/>
-                                        </Border>
-
-                                        <VerticalStackLayout Grid.Column="1" Spacing="2">
-                                            <Label Text="{Binding CategoryTitle}" 
-                                       FontAttributes="Bold" 
-                                       FontSize="15" 
-                                       TextColor="#333333"/>
-                                            <Label Text="{Binding SubTitleText}" 
-                                       FontSize="11" 
-                                       TextColor="#999999"/>
-
-                                            <HorizontalStackLayout Spacing="6" Margin="0,2,0,4">
-                                                <Label Text="{Binding MainValueText}" 
-                                           FontSize="24" 
-                                           FontAttributes="Bold" 
-                                           TextColor="{Binding AccentColor}"/>
-                                                <Label Text="{Binding UnitText}" 
-                                           FontSize="14" 
-                                           TextColor="#666666" 
-                                           VerticalOptions="End" 
-                                           Margin="0,0,0,3"/>
-                                            </HorizontalStackLayout>
-                                        </VerticalStackLayout>
-                                    </Grid>
-
-                                    <!-- รายการย่อยสีขาว (SubItems) -->
-                                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding SubItems}" Spacing="8">
-                                        <BindableLayout.ItemTemplate>
-                                            <DataTemplate>
-                                                <Border StrokeShape="RoundRectangle 16" 
-                                            BackgroundColor="White" 
-                                            Padding="12,10" 
-                                            StrokeThickness="0">
-                                                    <Grid ColumnDefinitions="Auto, *, Auto, Auto" ColumnSpacing="10" VerticalOptions="Center">
-
-                                                        <!-- ไอคอนย่อย -->
-                                                        <Label Grid.Column="0" Text="{Binding Icon}" FontSize="20" VerticalOptions="Center"/>
-
-                                                        <!-- ชื่อรายการย่อย & Progress Bar -->
-                                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
-                                                            <Label Text="{Binding Title}" FontSize="12" FontAttributes="Bold" TextColor="#444444"/>
-                                                            <ProgressBar Progress="{Binding Progress}" 
-                                                             ProgressColor="{Binding BindingContext.AccentColor, Source={RelativeSource AncestorType={x:Type VerticalStackLayout}}}" 
-                                                             BackgroundColor="#E0E0E0" 
-                                                             HeightRequest="4"/>
-                                                        </VerticalStackLayout>
-
-                                                        <!-- Badge จำนวนเงิน/รายการ -->
-                                                        <Border Grid.Column="2" 
-                                                    BackgroundColor="{Binding BindingContext.BadgeBgColor, Source={RelativeSource AncestorType={x:Type VerticalStackLayout}}}" 
-                                                    StrokeShape="RoundRectangle 12" 
-                                                    Padding="10,4" 
-                                                    StrokeThickness="0"
-                                                    VerticalOptions="Center">
-                                                            <Label Text="{Binding ValueText}" 
-                                                       FontSize="11" 
-                                                       FontAttributes="Bold" 
-                                                       TextColor="{Binding BindingContext.AccentColor, Source={RelativeSource AncestorType={x:Type VerticalStackLayout}}}"/>
-                                                        </Border>
-
-                                                        <!-- ลูกศร > -->
-                                                        <Label Grid.Column="3" Text=">" TextColor="#93C5FD" FontSize="14" FontAttributes="Bold" VerticalOptions="Center"/>
-                                                    </Grid>
-                                                </Border>
-                                            </DataTemplate>
-                                        </BindableLayout.ItemTemplate>
-                                    </VerticalStackLayout>
-
-                                </VerticalStackLayout>
+                    <!-- เมนูขวา (เบิก, รายการ, สรุป) -->
+                    <HorizontalStackLayout Grid.Column="1" HorizontalOptions="End" Spacing="16">
+                        <VerticalStackLayout Spacing="2">
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnCreateWithdrawalTapped" />
+                            </VerticalStackLayout.GestureRecognizers>
+                            <Border BackgroundColor="#2E7D32" StrokeShape="RoundRectangle 18" WidthRequest="36" HeightRequest="36">
+                                <Label Text="+" TextColor="White" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
                             </Border>
-                        </DataTemplate>
-                    </BindableLayout.ItemTemplate>
-                </VerticalStackLayout>
-            </ScrollView>
+                            <Label Text="เบิก" FontSize="11" TextColor="#616161" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
 
-            <!-- TAB 2: รายสวัสดิการ -->
-            <ScrollView Padding="16,0,16,16">
-                <ScrollView.Triggers>
-                    <DataTrigger TargetType="ScrollView" Binding="{Binding IsBenefitTabSelected}" Value="False">
-                        <Setter Property="IsVisible" Value="False" />
-                    </DataTrigger>
-                    <DataTrigger TargetType="ScrollView" Binding="{Binding IsBenefitTabSelected}" Value="True">
-                        <Setter Property="IsVisible" Value="True" />
-                    </DataTrigger>
-                </ScrollView.Triggers>
+                        <VerticalStackLayout Spacing="2">
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnWithdrawalListTapped" />
+                            </VerticalStackLayout.GestureRecognizers>
+                            <Border BackgroundColor="#FFF9C4" StrokeShape="RoundRectangle 18" WidthRequest="36" HeightRequest="36" Stroke="#FBC02D">
+                                <Label Text="📋" FontSize="16" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            </Border>
+                            <Label Text="รายการ" FontSize="11" TextColor="#616161" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
 
-                <VerticalStackLayout Spacing="12">
+                        <VerticalStackLayout Spacing="2">
+                            <Border BackgroundColor="#E0F7FA" StrokeShape="RoundRectangle 18" WidthRequest="36" HeightRequest="36" Stroke="#00ACC1">
+                                <Label Text="📊" FontSize="16" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            </Border>
+                            <Label Text="สรุป" FontSize="11" TextColor="#616161" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </Grid>
 
-                    <!-- Header Filter Dropdown -->
-                    <Grid ColumnDefinitions="Auto, *" VerticalOptions="Center" Margin="4,0,4,4">
-                        <Label Grid.Column="0" 
-                   Text="แสดงสวัสดิการ" 
-                   FontSize="13" 
-                   TextColor="#444444" 
-                   VerticalOptions="Center"/>
+                <!-- Tab Switcher -->
+                <Border x:Name="TabSwitcherBorder" BackgroundColor="#E8EEF9" StrokeShape="RoundRectangle 20" StrokeThickness="0" Padding="4">
+                    <Grid ColumnDefinitions="*, *">
+                        <Border x:Name="TabCategoryBorder" Grid.Column="0" BackgroundColor="#2979FF" StrokeShape="RoundRectangle 16" Padding="0,10" StrokeThickness="0">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnCategoryTabTapped"/>
+                            </Border.GestureRecognizers>
+                            <HorizontalStackLayout HorizontalOptions="Center" Spacing="6">
+                                <Label Text="🧱" FontSize="14" VerticalOptions="Center"/>
+                                <Label x:Name="TabCategoryLabel" Text="ตามหมวดหมู่" TextColor="White" FontAttributes="Bold" FontSize="13" VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </Border>
 
-                        <Border Grid.Column="1" 
-                    HorizontalOptions="Start" 
-                    Margin="12,0,0,0"
-                    BackgroundColor="#EBF3FE" 
-                    StrokeShape="RoundRectangle 10" 
-                    StrokeThickness="0" 
-                    Padding="12,2">
-                            <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
-                                <Picker ItemsSource="{Binding FilterOptions}" 
-                            SelectedItem="{Binding SelectedFilter}"
-                            FontSize="12" 
-                            TextColor="#2563EB" 
-                            TitleColor="#2563EB"
-                            HeightRequest="36"
-                            VerticalOptions="Center"/>
+                        <Border x:Name="TabWelfareBorder" Grid.Column="1" BackgroundColor="Transparent" StrokeShape="RoundRectangle 16" Padding="0,10" StrokeThickness="0">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnWelfareTabTapped"/>
+                            </Border.GestureRecognizers>
+                            <HorizontalStackLayout HorizontalOptions="Center" Spacing="6">
+                                <Label Text="📑" FontSize="14" VerticalOptions="Center"/>
+                                <Label x:Name="TabWelfareLabel" Text="รายสวัสดิการ" TextColor="#5C6BC0" FontSize="13" VerticalOptions="Center"/>
                             </HorizontalStackLayout>
                         </Border>
                     </Grid>
+                </Border>
 
-                    <!-- List รายการสวัสดิการ -->
-                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Benefits}" Spacing="8">
-                        <BindableLayout.ItemTemplate>
-                            <DataTemplate>
-                                <Border StrokeShape="RoundRectangle 18" 
-                            BackgroundColor="White" 
-                            Stroke="#E5E7EB" 
-                            StrokeThickness="1" 
-                            Padding="12,10">
-
-                                    <Grid ColumnDefinitions="Auto, *, Auto, Auto" ColumnSpacing="12" VerticalOptions="Center">
-
-                                        <!-- ไอคอนด้านซ้าย -->
-                                        <Label Grid.Column="0" 
-                                   Text="{Binding Icon}" 
-                                   FontSize="22" 
-                                   VerticalOptions="Center"/>
-
-                                        <!-- ชื่อสวัสดิการ & Progress Bar (ถ้ามี) -->
-                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
-                                            <Label Text="{Binding Title}" 
-                                       FontSize="13" 
-                                       FontAttributes="Bold" 
-                                       TextColor="#333333"/>
-
-                                            <ProgressBar Progress="{Binding Progress}" 
-                                             IsVisible="{Binding HasProgress}" 
-                                             ProgressColor="#2563EB" 
-                                             BackgroundColor="#E0F2FE" 
-                                             HeightRequest="5"/>
-                                        </VerticalStackLayout>
-
-                                        <!-- Badge แสดงราคา และ จำนวนรายการ -->
-                                        <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="End" Spacing="2">
-                                            <Border BackgroundColor="#E0F2FE" 
-                                        StrokeShape="RoundRectangle 10" 
-                                        Padding="10,3" 
-                                        StrokeThickness="0"
-                                        HorizontalOptions="End">
-                                                <Label Text="{Binding AmountText}" 
-                                           FontSize="11" 
-                                           FontAttributes="Bold" 
-                                           TextColor="#2563EB"/>
-                                            </Border>
-
-                                            <Label Text="{Binding CountText}" 
-                                       FontSize="10" 
-                                       TextColor="#9CA3AF" 
-                                       HorizontalOptions="End"/>
-                                        </VerticalStackLayout>
-
-                                        <!-- ลูกศร > -->
-                                        <Label Grid.Column="3" 
-                                   Text=">" 
-                                   TextColor="#60A5FA" 
-                                   FontSize="14" 
-                                   FontAttributes="Bold" 
-                                   VerticalOptions="Center"/>
-                                    </Grid>
+                <!-- ================= VIEW 1: ตามหมวดหมู่ ================= -->
+                <VerticalStackLayout x:Name="ViewCategory" Spacing="16" IsVisible="True">
+                    <Border BackgroundColor="#F0F5FF" StrokeShape="RoundRectangle 20" StrokeThickness="0" Padding="16">
+                        <VerticalStackLayout Spacing="12">
+                            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                                <Border Grid.Column="0" BackgroundColor="#2979FF" StrokeShape="RoundRectangle 20" WidthRequest="40" HeightRequest="40" StrokeThickness="0">
+                                    <Label Text="💼" FontSize="18" HorizontalOptions="Center" VerticalOptions="Center"/>
                                 </Border>
-                            </DataTemplate>
-                        </BindableLayout.ItemTemplate>
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                    <Label Text="งานและการปฏิบัติงาน" TextColor="#1A237E" FontAttributes="Bold" FontSize="16"/>
+                                    <Label Text="ใช้ไปแล้วทั้งหมด" TextColor="#7E57C2" FontSize="11"/>
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                <Label Text="5,900" TextColor="#2979FF" FontAttributes="Bold" FontSize="26"/>
+                                <Label Text="บาท" TextColor="#2979FF" FontSize="14" VerticalOptions="End" Margin="0,0,0,4"/>
+                            </HorizontalStackLayout>
+
+                            <VerticalStackLayout x:Name="WorkCategoryList" Spacing="8"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border BackgroundColor="#FFF8F0" StrokeShape="RoundRectangle 20" StrokeThickness="0" Padding="16">
+                        <VerticalStackLayout Spacing="12">
+                            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                                <Border Grid.Column="0" BackgroundColor="#FF6D00" StrokeShape="RoundRectangle 20" WidthRequest="40" HeightRequest="40" StrokeThickness="0">
+                                    <Label Text="🎁" FontSize="18" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                    <Label Text="ทรัพยากรและสวัสดิการในการทำงาน" TextColor="#3E2723" FontAttributes="Bold" FontSize="15"/>
+                                    <Label Text="ขอไปแล้วทั้งหมด" TextColor="#8D6E63" FontSize="11"/>
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                <Label Text="12" TextColor="#FF6D00" FontAttributes="Bold" FontSize="26"/>
+                                <Label Text="รายการ" TextColor="#FF6D00" FontSize="14" VerticalOptions="End" Margin="0,0,0,4"/>
+                            </HorizontalStackLayout>
+
+                            <VerticalStackLayout x:Name="ResourceCategoryList" Spacing="8"/>
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- ================= VIEW 2: รายสวัสดิการ ================= -->
+                <VerticalStackLayout x:Name="ViewWelfare" Spacing="12" IsVisible="False">
+                    <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+                        <Label Text="แสดงสวัสดิการ" TextColor="#616161" FontSize="13" VerticalOptions="Center"/>
+
+                        <Border BackgroundColor="#E8EAF6" StrokeShape="RoundRectangle 12" Padding="8,0" StrokeThickness="0">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Picker x:Name="WelfareFilterPicker"
+                                        Grid.Column="0"
+                                        TextColor="#1A237E"
+                                        FontAttributes="Bold"
+                                        FontSize="13"
+                                        Title="ทั้งหมด"
+                                        TitleColor="#1A237E"
+                                        SelectedIndexChanged="OnWelfareFilterChanged" />
+                                <Label Grid.Column="1" Text="˅" TextColor="#1A237E" FontSize="10" VerticalOptions="Center" InputTransparent="True"/>
+                            </Grid>
+                        </Border>
+                    </HorizontalStackLayout>
+
+                    <VerticalStackLayout x:Name="WelfareItemList" Spacing="8" IsVisible="True"/>
+                    <VerticalStackLayout x:Name="WelfareGroupCategoryList" Spacing="12" IsVisible="False"/>
+                </VerticalStackLayout>
+
+                <!-- ================= VIEW 3: Drill-down 1 ================= -->
+                <VerticalStackLayout x:Name="ViewSubCategoryDetail" Spacing="12" IsVisible="False">
+                    <VerticalStackLayout Spacing="4" Margin="0,4">
+                        <Label x:Name="SubGroupTitleLabel" Text="งานและการปฏิบัติงาน" TextColor="#757575" FontSize="12"/>
+                        <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                            <Label x:Name="SubCategoryIconLabel" Text="🧳" FontSize="18" VerticalOptions="Center"/>
+                            <Label x:Name="SubCategoryTitleLabel" Text="ปฏิบัติงานนอกสถานที่" TextColor="#1976D2" FontAttributes="Bold" FontSize="16" VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
                     </VerticalStackLayout>
 
+                    <VerticalStackLayout x:Name="SubCategoryDetailList" Spacing="8"/>
                 </VerticalStackLayout>
-            </ScrollView>
 
-        </Grid>
+                <!-- ================= VIEW 4: Drill-down 2 ================= -->
+                <VerticalStackLayout x:Name="ViewWelfareDetail" Spacing="12" IsVisible="False">
+                    <Label Text="สวัสดิการทั้งหมด" TextColor="#757575" FontSize="12"/>
+
+                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12" Margin="0,0,0,4">
+                        <Border Grid.Column="0" BackgroundColor="#F5F6F8" StrokeShape="RoundRectangle 12" WidthRequest="44" HeightRequest="44" StrokeThickness="0">
+                            <Label x:Name="WelfareDetailIconLabel" Text="🚌" FontSize="22" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+
+                        <Label Grid.Column="1" x:Name="WelfareDetailTitleLabel" Text="พาหนะ,ขนส่ง" TextColor="#1976D2" FontAttributes="Bold" FontSize="18" VerticalOptions="Center"/>
+
+                        <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="End" Spacing="2">
+                            <Border BackgroundColor="#E3F2FD" StrokeShape="RoundRectangle 12" Padding="10,4" StrokeThickness="0">
+                                <Label x:Name="WelfareDetailTotalAmountLabel" Text="5,750 บาท" TextColor="#2979FF" FontSize="12" FontAttributes="Bold"/>
+                            </Border>
+                            <Label x:Name="WelfareDetailTotalCountLabel" Text="3 รายการ" TextColor="#9E9E9E" FontSize="11" HorizontalOptions="End"/>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <VerticalStackLayout x:Name="WelfareDetailTransactionList" Spacing="10"/>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
     </Grid>
 
 </ContentPage>
